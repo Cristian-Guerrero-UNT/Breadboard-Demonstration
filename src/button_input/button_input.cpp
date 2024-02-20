@@ -19,7 +19,7 @@ void setupButtons() {
   attachInterrupt(digitalPinToInterrupt(EMERG_BUTTON), emerg_stop, LOW);
   pinMode(Enable_button, INPUT_PULLUP);
   pinMode(stepPin, OUTPUT);
-  Timer1.initialize(step_delay);  // 5000us = 200Hz
+  Timer1.initialize(step_delay);  // 5000us = 200Hz is this used to create the square Step Signal?
 }
 
 void loopForButtonInput() {

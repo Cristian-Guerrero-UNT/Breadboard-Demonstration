@@ -18,12 +18,13 @@
 
 #include <drv8711.h>
 #include <SPI.h>
+#include <TimerOne.h>
 
 #define SLEEPpin 9
 #define RESETpin 7
 #define X_ssPin 3
 #define Y_ssPin 4
-#define Z_ssPin 5
+#define Z_ssPin 5 // This is not used 
 
 // Initialise an array of drv8711 objects for the drivers
 drv8711 Axis[3] = { drv8711(X_ssPin), drv8711(Y_ssPin), drv8711(Z_ssPin)}; //parameter is CSS Pin for Driver
@@ -58,6 +59,9 @@ int currentAxis = 0;    // Selected Axis
 void setup ()
 //##########################################################################
 {
+  // Setup the buttons
+  setupButtons();
+
   // Wake Modules
   pinMode (SLEEPpin, OUTPUT) ;
   digitalWrite (SLEEPpin, HIGH) ;
@@ -106,6 +110,9 @@ void setup ()
 void loop ()
 //##########################################################################
 {
+   // 
+   loopForButtonInput();
+   
    // Periodically check status register, and print any flagged errors
    if (millis() > LastRead + readDelay) {
       Axis[currentAxis].get_status();
@@ -373,3 +380,19 @@ void selectAxis(int axis)
    currentAxis = axis;
  }
 }
+
+//##########################################################################
+void changeState() 
+//##########################################################################
+{
+  motorState = !motorState;
+  setMotor(motorState);
+}
+
+//##########################################################################
+void emerg_stop()
+//##########################################################################
+{
+  Axis[currentAxis].disable() ;
+}
+
