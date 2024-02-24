@@ -13,9 +13,6 @@
 
 // Function declarations
 void setupButtons();
-void loopForButtonInput();
-void changeState();
-void selectFrequency(int value);
-void emerg_stop();
+void actionForButton(int buttonPin);
 
 #endif

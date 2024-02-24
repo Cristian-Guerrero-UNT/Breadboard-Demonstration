@@ -1,6 +1,5 @@
 // MotorController.cpp
 #include "button_input.h"
-#include <drv8711.h>
 
 #define stepPin 10 //For now, this declaration can live in the buttons files.
 
