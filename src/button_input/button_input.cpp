@@ -1,7 +1,9 @@
 // MotorController.cpp
 #include "button_input.h"
 
-#define stepPin 10 //For now, this declaration can live in the buttons files.
+// Define pins
+const byte stepSignalPin 10; //For now, this declaration can live in the buttons files.
+const byte directionPin = ;
 
 // Global variables
 uint8_t button_state = 1;
@@ -17,7 +19,7 @@ void setupButtons() {
   pinMode(EMERG_BUTTON, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(EMERG_BUTTON), emerg_stop, LOW);
   pinMode(Enable_button, INPUT_PULLUP);
-  pinMode(stepPin, OUTPUT);
+  pinMode(stepSignalPin, OUTPUT);
   Timer1.initialize(step_delay);  // 5000us = 200Hz is this used to create the square Step Signal?
 }
 
@@ -42,3 +44,13 @@ void selectFrequency(int value) {
   Timer1.initialize(step_delay);
 }
 
+void stepSignal() {
+
+}
+
+void takeStep() {
+  digitalWrite(driverPUL, HIGH);
+  delayMicroseconds(half_step_delay);
+  digitalWrite(driverPUL, LOW);
+  delayMicroseconds(half_step_delay);
+}
