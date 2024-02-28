@@ -18,7 +18,8 @@
 
 #include <drv8711.h>
 #include <SPI.h>
-#include <TimerOne.h>
+#include "button_input_interrupts.h"
+#include "step_signal.h"
 
 #define SLEEPpin 9
 #define RESETpin 7
@@ -61,6 +62,8 @@ void setup()
 {
   // Setup the buttons
   setupButtons();
+  // Setup the frequency at which each step will be taken.
+  setupStepSignalFrequency();
 
   // Wake Modules
   pinMode(SLEEPpin, OUTPUT);
@@ -111,7 +114,7 @@ void loop()
 //##########################################################################
 {
   //
-  loopForButtonInput();
+  checkButtonState();
 
   // Periodically check status register, and print any flagged errors
   if (millis() > LastRead + readDelay) {

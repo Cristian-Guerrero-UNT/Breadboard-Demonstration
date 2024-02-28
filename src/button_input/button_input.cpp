@@ -44,13 +44,3 @@ void selectFrequency(int value) {
   Timer1.initialize(step_delay);
 }
 
-void stepSignal() {
-
-}
-
-void takeStep() {
-  digitalWrite(driverPUL, HIGH);
-  delayMicroseconds(half_step_delay);
-  digitalWrite(driverPUL, LOW);
-  delayMicroseconds(half_step_delay);
-}
