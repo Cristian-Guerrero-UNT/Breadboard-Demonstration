@@ -16,8 +16,7 @@ If so, an appropriate delay may have to be implemented with millis() instead.
 // At setup I want to calculate the correct delay function to use for calculating half_step_delay.
 void setupStepSignalFrequency() {
   pinMode(stepSignalPin, OUTPUT);
-  pinMode(directionPin, OUTPUT);
-
+  
   // half_step_delay is  calculated in milliseconds.
   half_step_delay = 60L * 1000L / number_of_steps_for_one_rotation / whatSpeed / 2L;
 

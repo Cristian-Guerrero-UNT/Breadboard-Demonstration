@@ -7,10 +7,11 @@
 #include "step_signal.h"
 
 // Pin definitions
-const byte EMERGENCY_BUTTON = 2;
+const byte directionPin = 9;
 const byte ENABLE_BUTTON = 7;
 const byte CW_BUTTON = 6;
 const byte CCW_BUTTON = 5;
+const byte EMERGENCY_BUTTON = 2;
 // Limit switches
 const byte TOP_LIMIT_SWITCH = 1;
 const byte BOTTOM_LIMIT_SWITCH = 0;

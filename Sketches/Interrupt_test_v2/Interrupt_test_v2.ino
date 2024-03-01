@@ -2,7 +2,7 @@
 This sketch is an example of how interrupts can be used to gather
 user input via external interrupts and pin change interrupts.
 It also allows for testing the logic needed for implementing
-the limit switches and deciding 
+the limit switches and deciding when to allow rotations.
 */
 
 #include <PinChangeInterrupt.h>
@@ -34,6 +34,8 @@ byte seconds_for_LED_activation = 15;
 // Define the actions for each button
 void actionForButton(byte buttonPin)
 {
+  unsigned int counter = 0; // For the CW and CCW rotations.
+  
   switch (buttonPin)
   {
   case EMERGENCY_BUTTON:
@@ -54,6 +56,42 @@ void actionForButton(byte buttonPin)
     digitalWrite(ENABLE_LED, LOW);
     state_of_ENABLE_BUTTON = 0;
     break;
+  case CW_BUTTON:
+    // Rotate the stepper motor 2 rotations CW
+    // Yellow1 LED On for 15 seconds
+    Serial.println("Yellow1 LED On");
+    digitalWrite(CW_LED, HIGH);
+    while ((counter < seconds_for_LED_activation) && (state_of_TOP_LIMIT_SWITCH == 0))
+    {
+      delay(1000);
+      counter++;
+    }
+    digitalWrite(CW_LED, LOW);
+    state_of_CW_BUTTON = 0; //
+    // Clear the limit switch flag after a successful rotation. The carriage should no longer be on the limit switch.
+    if (state_of_BOTTOM_LIMIT_SWITCH != 0)
+    {
+      state_of_BOTTOM_LIMIT_SWITCH = 0;
+    }
+    break;
+  case CCW_BUTTON:
+    // Rotate the stepper motor 2 rotations CCW
+    // Yellow1 LED On for 15 seconds
+    Serial.println("Yellow2 LED On");
+    digitalWrite(CCW_LED, HIGH);
+    while ((counter < seconds_for_LED_activation) && (state_of_BOTTOM_LIMIT_SWITCH == 0))
+    {
+      delay(1000);
+      counter++;
+    }
+    digitalWrite(CCW_LED, LOW);
+    state_of_CCW_BUTTON = 0;
+    // Clear the limit switch flag after a successful rotation. The carriage should no longer be on the limit switch.
+    if (state_of_TOP_LIMIT_SWITCH != 0)
+    {
+      state_of_TOP_LIMIT_SWITCH = 0;
+    }
+    break;
   default:
     // If we enter here, send error message
     Serial.println("There has been an error within the switch statement.");
@@ -61,20 +99,64 @@ void actionForButton(byte buttonPin)
   }
 }
 
+// This function should execute 2 rotations of the stepper motor.
+// 
+// void executeRotation(byte buttonPin)
+// {
+//   unsigned int counter = 0;
+
+//   // Take steps in the direction called for by the user.
+//   // Turn the corresponding LED on for 15 seconds.
+//   if (buttonPin == CW_BUTTON)
+//   {
+//     Serial.println("Yellow1 LED On");
+//     digitalWrite(CW_LED, HIGH);
+//     while ((counter < seconds_for_LED_activation) && (state_of_TOP_LIMIT_SWITCH == 0))
+//     {
+//       delay(1000);
+//       counter++;
+//     }
+//     digitalWrite(CW_LED, LOW);
+//     state_of_CW_BUTTON = 0;
+//   }
+//   else
+//   { // CCW button was pressed.
+//     Serial.println("Yellow2 LED On");
+//     digitalWrite(CCW_LED, HIGH);
+//     while ((counter < seconds_for_LED_activation) && (state_of_BOTTOM_LIMIT_SWITCH == 0))
+//     {
+//       delay(1000);
+//       counter++;
+//     }
+//     digitalWrite(CCW_LED, LOW);
+//     state_of_CCW_BUTTON = 0;
+//   }
+
+//   // Clear the flag after a  successful rotation. The carriage should no longer be on the limit switch.
+//   if (state_of_TOP_LIMIT_SWITCH != 0)
+//   {
+//     state_of_TOP_LIMIT_SWITCH = 0;
+//   }
+//   if (state_of_BOTTOM_LIMIT_SWITCH != 0)
+//   {
+//     state_of_BOTTOM_LIMIT_SWITCH = 0;
+//   }
+// }
+
 // Interrupt service routines
-void emergency_stop()
+void emergencyStop()
 {
   // Red LED On
   state_of_EMERGENCY_BUTTON = EMERGENCY_BUTTON;
 }
 
-void pinChangeInterrupt1()
+void enableMotors()
 {
   // Green LED On
   state_of_ENABLE_BUTTON = ENABLE_BUTTON;
 }
 
-void pinChangeInterrupt2()
+void requestCWRotation()
 {
   // Check if the corresponding limit switch is NOT pressed down.
   // Set flag to enable rotation if so.
@@ -82,13 +164,9 @@ void pinChangeInterrupt2()
   {
     state_of_CW_BUTTON = CW_BUTTON;
   }
-  else
-  {
-    Serial.println("Carriage is on the Top Limit Switch. Select the other direction.");
-  }
 }
 
-void pinChangeInterrupt3()
+void requestCCWRotation()
 {
   // Check if the corresponding limit switch is NOT pressed down.
   // Set flag to enable rotation if so.
@@ -96,19 +174,15 @@ void pinChangeInterrupt3()
   {
     state_of_CCW_BUTTON = CCW_BUTTON;
   }
-  else
-  {
-    Serial.println("Carriage is on the Bottom Limit Switch. Select the other direction.");
-  }
 }
 
-void pinChangeInterrupt4()
+void topLimitSwitchTriggered()
 {
   // TOP_LIMIT_SWITCH has been pressed down.
   state_of_TOP_LIMIT_SWITCH = 1;
 }
 
-void pinChangeInterrupt5()
+void bottomLimitSwitchTriggered()
 {
   // BOTTOM_LIMIT_SWITCH has been pressed down.
   state_of_BOTTOM_LIMIT_SWITCH = 1;
@@ -133,55 +207,12 @@ void setupButtons()
   // Attach interrupts to pins.
   // Arduino Interrupts allow for LOW, HIGH, CHANGE, RISING, AND FALLING as valid modes.
   // The PinChangeInterrupt library has RISING, FALLING, and CHANGE as valid modes of operation.
-  attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergency_stop, FALLING);
-  attachPCINT(digitalPinToPCINT(ENABLE_BUTTON), pinChangeInterrupt1, FALLING);
-  attachPCINT(digitalPinToPCINT(CW_BUTTON), pinChangeInterrupt2, FALLING);
-  attachPCINT(digitalPinToPCINT(CCW_BUTTON), pinChangeInterrupt3, FALLING);
-  attachPCINT(digitalPinToPCINT(TOP_LIMIT_SWITCH), pinChangeInterrupt4, FALLING);
-  attachPCINT(digitalPinToPCINT(BOTTOM_LIMIT_SWITCH), pinChangeInterrupt5, FALLING);
-}
-
-// This function should execute 2 rotations of the stepper motor.
-// 
-void executeRotation(byte buttonPin)
-{
-  unsigned int counter = 0;
-  byte button = buttonPin;
-
-  // Take steps in the direction called for by the user.
-  // Turn the corresponding LED on for 15 seconds.
-  if (button == CW_BUTTON)
-  {
-    Serial.println("Yellow1 LED On");
-    digitalWrite(CW_LED, HIGH);
-    while (counter < seconds_for_LED_activation && state_of_TOP_LIMIT_SWITCH == 0)
-    {
-      delay(1000);
-      counter++;
-    }
-    digitalWrite(CW_LED, LOW);
-  }
-  else
-  { // CCW button was pressed.
-    Serial.println("Yellow2 LED On");
-    digitalWrite(CCW_LED, HIGH);
-    while (counter < seconds_for_LED_activation && state_of_BOTTOM_LIMIT_SWITCH == 0)
-    {
-      delay(1000);
-      counter++;
-    }
-    digitalWrite(CCW_LED, LOW);
-  }
-
-  // Clear the flag after a  successful rotation. The carriage should no longer be on the limit switch.
-  if (state_of_TOP_LIMIT_SWITCH != 0)
-  {
-    state_of_TOP_LIMIT_SWITCH = 0;
-  }
-  if (state_of_BOTTOM_LIMIT_SWITCH != 0)
-  {
-    state_of_BOTTOM_LIMIT_SWITCH = 0;
-  }
+  attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyStop, FALLING);
+  attachPCINT(digitalPinToPCINT(ENABLE_BUTTON), enableMotors, FALLING);
+  attachPCINT(digitalPinToPCINT(CW_BUTTON), requestCWRotation, FALLING);
+  attachPCINT(digitalPinToPCINT(CCW_BUTTON), requestCCWRotation, FALLING);
+  attachPCINT(digitalPinToPCINT(TOP_LIMIT_SWITCH), topLimitSwitchTriggered, FALLING);
+  attachPCINT(digitalPinToPCINT(BOTTOM_LIMIT_SWITCH), bottomLimitSwitchTriggered, FALLING);
 }
 
 void setup()
@@ -206,11 +237,11 @@ void loop()
   }
   else if (state_of_CW_BUTTON != 0)
   {
-    executeRotation(state_of_CW_BUTTON);
+    actionForButton(state_of_CW_BUTTON);
   }
   else if (state_of_CCW_BUTTON != 0)
   {
-    executeRotation(state_of_CCW_BUTTON);
+    actionForButton(state_of_CCW_BUTTON);
   }
   delay(500);
 }

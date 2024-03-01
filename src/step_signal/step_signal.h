@@ -9,7 +9,6 @@ For now, it is up to the user to make sure that the settings set in step_signal.
 
 // Pin definitions
 const byte stepSignalPin = 8;
-const byte directionPin = 9;
 
 // Define variables
 unsigned long half_step_delay; // Units are milliseconds.

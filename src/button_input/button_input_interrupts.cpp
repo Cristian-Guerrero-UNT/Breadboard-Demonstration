@@ -87,7 +87,9 @@ void pinChangeInterrupt5()
 }
 
 void setupButtons() {
-  // Set button pins as input
+  // Set pin as output.
+  pinMode(directionPin, OUTPUT);
+  // Set button pins as input.
   pinMode(EMERGENCY_BUTTON, INPUT_PULLUP);
   pinMode(ENABLE_BUTTON, INPUT_PULLUP);
   pinMode(CW_BUTTON, INPUT_PULLUP);
