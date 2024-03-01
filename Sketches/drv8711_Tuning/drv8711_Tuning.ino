@@ -21,14 +21,16 @@
 #include "button_input_interrupts.h"
 #include "step_signal.h"
 
-#define SLEEPpin 9
-#define RESETpin 7
-#define X_ssPin 3
-#define Y_ssPin 4
-#define Z_ssPin 5  // This is not used
+// Pin definitions
+// #define SLEEPpin 9
+const byte M1_ResetPin = 47;
+const byte M2_ResetPin = 46;
+const byte M1_SlaveSelectPin = 49;
+const byte M2_SlaveSelectPin = 48;
+
 
 // Initialise an array of drv8711 objects for the drivers
-drv8711 Axis[3] = { drv8711(X_ssPin), drv8711(Y_ssPin), drv8711(Z_ssPin) };  //parameter is CSS Pin for Driver
+drv8711 Axis[2] = { drv8711(M1_SlaveSelectPin), drv8711(M2_SlaveSelectPin) };  //parameter is CSS Pin for Driver
 
 // Constants for current calc / setting
 const float ISENSE = 0.05;                                    // Value of current sense resistors in ohms

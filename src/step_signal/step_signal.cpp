@@ -13,10 +13,11 @@ If so, an appropriate delay may have to be implemented with millis() instead.
 
 #include "step_signal.h"
 
-// At setup I want to calculate the correct delay function to use for calculating half_step_delay.
+// At setup, calculate the half_step_delay to use for calculating the step signal frequency.
 void setupStepSignalFrequency() {
-  pinMode(stepSignalPin, OUTPUT);
-  
+  pinMode(M1_StepSignalPin, OUTPUT);
+  // pinMode(M2_StepSignalPin, OUTPUT);
+
   // half_step_delay is  calculated in milliseconds.
   half_step_delay = 60L * 1000L / number_of_steps_for_one_rotation / whatSpeed / 2L;
 
@@ -33,9 +34,9 @@ void setupStepSignalFrequency() {
 
 // Creates one cycle of the step signal. The period should be 2 * half_step_delay.
 void takeStep() {
-  digitalWrite(stepSignalPin, HIGH);
+  digitalWrite(M1_StepSignalPin, HIGH);
   delay(half_step_delay);
-  digitalWrite(stepSignalPin, LOW);
+  digitalWrite(M1_StepSignalPin, LOW);
   delay(half_step_delay);
 }
 

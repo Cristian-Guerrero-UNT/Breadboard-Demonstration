@@ -8,7 +8,8 @@ For now, it is up to the user to make sure that the settings set in step_signal.
 #include <Arduino.h>
 
 // Pin definitions
-const byte stepSignalPin = 8;
+const byte M1_StepSignalPin = 43;
+// const byte M2_StepSignalPin = 42;
 
 // Define variables
 unsigned long half_step_delay; // Units are milliseconds.
