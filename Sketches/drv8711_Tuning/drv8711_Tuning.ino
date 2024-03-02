@@ -18,11 +18,11 @@
 
 #include <drv8711.h>
 #include <SPI.h>
-#include "button_input_interrupts.h"
-#include "step_signal.h"
+#include "src\button_input_interrupts.h"
+#include "src\step_signal.h"
 
 // Pin definitions
-// #define SLEEPpin 9
+#define SLEEPpin 2
 const byte M1_ResetPin = 47;
 const byte M2_ResetPin = 46;
 const byte M1_SlaveSelectPin = 49;
@@ -73,13 +73,13 @@ void setup()
   delay(1);
 
   // Reset the driver before initialisation
-  pinMode(RESETpin, OUTPUT);
-  digitalWrite(RESETpin, HIGH);
+  pinMode(M1_ResetPin, OUTPUT);
+  digitalWrite(M1_ResetPin, HIGH);
   delay(10);
-  digitalWrite(RESETpin, LOW);
+  digitalWrite(M1_ResetPin, LOW);
   delay(1);
 
-  digitalWrite(12, HIGH);
+  digitalWrite(50, HIGH); // CIPO is initially set HIGH during setup.
 
   // Start Serial
   Serial.begin(115200);
@@ -87,7 +87,7 @@ void setup()
   inputString.reserve(200);
 
   // Write library defaults to Drivers
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 2; i++) {
     Axis[i].init();
 
     // Make specific register settings - too set my current working values
@@ -389,7 +389,7 @@ void resetDefaults()
 void selectAxis(int axis)
 //##########################################################################
 {
-  if (axis >= 0 and axis < 3) {
+  if (axis >= 0 and axis < 2) {
     currentAxis = axis;
   }
 }
@@ -403,8 +403,9 @@ void changeState()
 }
 
 //##########################################################################
-void emerg_stop()
+void emergency_stop()
 //##########################################################################
 {
   Axis[currentAxis].disable();
 }
+
