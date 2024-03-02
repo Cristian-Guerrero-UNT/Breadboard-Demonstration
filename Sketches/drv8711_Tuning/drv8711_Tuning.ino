@@ -22,15 +22,16 @@
 #include "src\step_signal.h"
 
 // Pin definitions
-#define SLEEPpin 2
-const byte M1_ResetPin = 47;
-const byte M2_ResetPin = 46;
+const byte SM_ResetPin = 47;
+const byte SM_SleepPin = 46;
 const byte M1_ChipSelectPin = 49;
 const byte M2_ChipSelectPin = 48;
 
+// Variables
+bool motorState = false; // Variable for button press to enable or disable motor
 
 // Initialise an array of drv8711 objects for the drivers
-drv8711 Axis[2] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin) };  //parameter is CS Pin for Driver
+drv8711 Axis[2] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
 
 // Constants for current calc / setting
 const float ISENSE = 0.05;                                    // Value of current sense resistors in ohms
@@ -68,18 +69,18 @@ void setup()
   setupStepSignalFrequency();
 
   // Wake Modules
-  pinMode(SLEEPpin, OUTPUT);
-  digitalWrite(SLEEPpin, HIGH);
+  pinMode(SM_SleepPin, OUTPUT);
+  digitalWrite(SM_SleepPin, HIGH);
   delay(1);
 
   // Reset the driver before initialisation
-  pinMode(M1_ResetPin, OUTPUT);
-  digitalWrite(M1_ResetPin, HIGH);
+  pinMode(SM_ResetPin, OUTPUT);
+  digitalWrite(SM_ResetPin, HIGH);
   delay(10);
-  digitalWrite(M1_ResetPin, LOW);
+  digitalWrite(SM_ResetPin, LOW);
   delay(1);
 
-  digitalWrite(50, HIGH); // CIPO is initially set HIGH during setup.
+  digitalWrite(50, HIGH); // CIPO is initially set HIGH during setup. Default pin is D50 on the Mega 2560.
 
   // Start Serial
   Serial.begin(115200);
@@ -395,7 +396,7 @@ void selectAxis(int axis)
 }
 
 //##########################################################################
-void changeState()
+void changeMotorState()
 //##########################################################################
 {
   motorState = !motorState;
@@ -403,7 +404,7 @@ void changeState()
 }
 
 //##########################################################################
-void emergencyStop()
+void disableMotor()
 //##########################################################################
 {
   Axis[currentAxis].disable();

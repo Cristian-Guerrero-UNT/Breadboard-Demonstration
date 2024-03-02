@@ -10,11 +10,10 @@ This has caused issues uploading sketches in the past.
 #include <PinChangeInterrupt.h>
 #include "step_signal.h"
 
-// Variables
-extern bool motorState; // Variable for button press to enable or disable motor
-
 // Function declarations
 void setupButtons();
 void checkButtonState();
+void changeMotorState(); // Defined in the drv8711_Tuning.ino sketch.
+void disableMotor(); // Defined in the drv8711_Tuning.ino sketch.
 
 #endif

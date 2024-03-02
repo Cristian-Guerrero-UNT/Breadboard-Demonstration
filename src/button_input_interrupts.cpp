@@ -33,7 +33,6 @@ volatile byte state_of_M1_BOTTOM_LIMIT_SWITCH = 0;
 
 // Initialize Variables
 const byte rotations_per_button_press = 2; // Set how many rotations you want a button press to go here.
-bool motorState = false; // Variable for button press to enable or disable motor
 unsigned long steps_per_button_press = rotations_per_button_press * number_of_steps_for_one_rotation;// The max value this could be is 256 step_mode * 200 full steps per rotation * 60 rotations from one end of the track to the other end = 3,072,000 1/256 steps.
 
 
@@ -47,12 +46,12 @@ void actionForButton(byte buttonPin)
   {
   case EMERGENCY_BUTTON:
     // Disable stepper motor
-    emergencyStop();
+    disableMotor();
     state_of_EMERGENCY_BUTTON = 0;
     break;
   case ENABLE_BUTTON:
     // Enable stepper motor
-    changeState();
+    changeMotorState();
     state_of_ENABLE_BUTTON = 0;
     break;
   case M1_CW_BUTTON:
@@ -63,7 +62,7 @@ void actionForButton(byte buttonPin)
       takeStep();
       counter++;
     }
-    state_of_M1_CW_BUTTON = 0; //
+    state_of_M1_CW_BUTTON = 0;
     // Clear the limit switch flag after a successful rotation. The carriage should no longer be on the limit switch.
     if (state_of_M1_BOTTOM_LIMIT_SWITCH != 0)
     {
@@ -161,7 +160,7 @@ void setupButtons()
   // Arduino Interrupts allow for LOW, HIGH, CHANGE, RISING, AND FALLING as valid modes.
   // The PinChangeInterrupt library has RISING, FALLING, and CHANGE as valid modes of operation.
   attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON), emergencyStop, FALLING);
-  attachPCINT(digitalPinToPCINT(ENABLE_BUTTON), enableMotors, FALLING);
+  attachInterrupt(digitalPinToInterrupt(ENABLE_BUTTON), enableMotors, FALLING);
   attachPCINT(digitalPinToPCINT(M1_CW_BUTTON), requestCWRotation, FALLING);
   attachPCINT(digitalPinToPCINT(M1_CCW_BUTTON), requestCCWRotation, FALLING);
   attachPCINT(digitalPinToPCINT(M1_TOP_LIMIT_SWITCH), topLimitSwitchTriggered, FALLING);

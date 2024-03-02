@@ -28,7 +28,7 @@ void setupStepSignalFrequency() {
   pinMode(M1_StepSignalPin, OUTPUT);
   // pinMode(M2_StepSignalPin, OUTPUT);
 
-  unsigned int number_of_steps_for_one_rotation = microstep_mode * number_of_full_steps; // Number of steps that it will take to rotate 360 degrees.
+  number_of_steps_for_one_rotation = microstep_mode * number_of_full_steps; // Number of steps that it will take to rotate 360 degrees.
 
   // half_step_delay is calculated in milliseconds.
   half_step_delay = 60L * 1000L / number_of_steps_for_one_rotation / whatSpeed / 2L;
