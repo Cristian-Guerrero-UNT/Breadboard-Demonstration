@@ -14,7 +14,7 @@ drv8711::drv8711 (int pin)
 	ErrorFlag = false;
 	
 	SPI.begin(); 
-    SPI.setClockDivider(SPI_CLOCK_DIV4);
+    SPI.setClockDivider(SPI_CLOCK_DIV16); // The default SPI_CLOCK_DIV4 causes errors while communicating. 
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
  }

@@ -25,12 +25,12 @@
 #define SLEEPpin 2
 const byte M1_ResetPin = 47;
 const byte M2_ResetPin = 46;
-const byte M1_SlaveSelectPin = 49;
-const byte M2_SlaveSelectPin = 48;
+const byte M1_ChipSelectPin = 49;
+const byte M2_ChipSelectPin = 48;
 
 
 // Initialise an array of drv8711 objects for the drivers
-drv8711 Axis[2] = { drv8711(M1_SlaveSelectPin), drv8711(M2_SlaveSelectPin) };  //parameter is CSS Pin for Driver
+drv8711 Axis[2] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin) };  //parameter is CS Pin for Driver
 
 // Constants for current calc / setting
 const float ISENSE = 0.05;                                    // Value of current sense resistors in ohms
@@ -403,7 +403,7 @@ void changeState()
 }
 
 //##########################################################################
-void emergency_stop()
+void emergencyStop()
 //##########################################################################
 {
   Axis[currentAxis].disable();

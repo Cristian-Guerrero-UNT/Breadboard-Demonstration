@@ -1,23 +1,58 @@
 #include "button_input_interrupts.h"
-#include "step_signal.h"
+
+// Pin definitions
+const byte M1_DirectionPin = 45;
+// const byte M2_DirectionPin = 44;
+const byte EMERGENCY_BUTTON = 21;
+const byte ENABLE_BUTTON = 20;
+const byte M1_CW_BUTTON = 13;
+const byte M1_CCW_BUTTON = 12;
+// To-do: Assign pins on the MEGA to these buttons.
+// const byte M2_CW_BUTTON = ;
+// const byte M2_CCW_BUTTON = ;
+// Limit switches
+const byte M1_TOP_LIMIT_SWITCH = 11;
+const byte M1_BOTTOM_LIMIT_SWITCH = 10;
+// To-do: Assign pins on the MEGA to these buttons.
+// const byte M2_TOP_LIMIT_SWITCH = ;
+// const byte M2_BOTTOM_LIMIT_SWITCH = ;
+
+// Initialize volatile variables
+volatile byte state_of_EMERGENCY_BUTTON = 0;
+volatile byte state_of_ENABLE_BUTTON = 0;
+volatile byte state_of_M1_CW_BUTTON = 0;
+volatile byte state_of_M1_CCW_BUTTON = 0;
+volatile byte state_of_M1_TOP_LIMIT_SWITCH = 0;
+volatile byte state_of_M1_BOTTOM_LIMIT_SWITCH = 0;
+// Use when ready to test M2
+// volatile byte state_of_M2_CW_BUTTON = 0;
+// volatile byte state_of_M2_CCW_BUTTON = 0;
+// volatile byte state_of_M2_TOP_LIMIT_SWITCH = 0;
+// volatile byte state_of_M2_BOTTOM_LIMIT_SWITCH = 0;
+
+
+// Initialize Variables
+const byte rotations_per_button_press = 2; // Set how many rotations you want a button press to go here.
+bool motorState = false; // Variable for button press to enable or disable motor
+unsigned long steps_per_button_press = rotations_per_button_press * number_of_steps_for_one_rotation;// The max value this could be is 256 step_mode * 200 full steps per rotation * 60 rotations from one end of the track to the other end = 3,072,000 1/256 steps.
+
 
 // To-do: Decide and select appropriate outcome for emergency stop and enable.
 // Define the actions for each button
 void actionForButton(byte buttonPin)
 {
-  unsigned int counter = 0;
+  unsigned int counter = 0; // For CW and CCW rotation.
 
   switch (buttonPin)
   {
   case EMERGENCY_BUTTON:
     // Disable stepper motor
-    Axis[currentAxis].disable();
+    emergencyStop();
     state_of_EMERGENCY_BUTTON = 0;
     break;
   case ENABLE_BUTTON:
     // Enable stepper motor
-    motorState = !motorState;
-    setMotor(motorState);
+    changeState();
     state_of_ENABLE_BUTTON = 0;
     break;
   case M1_CW_BUTTON:
@@ -37,7 +72,7 @@ void actionForButton(byte buttonPin)
     break;
   case M1_CCW_BUTTON:
     // Rotate the stepper motor in CCW direction
-    digitalWrite(CCW_LED, HIGH);
+    digitalWrite(M1_DirectionPin, LOW);
     while ((counter < steps_per_button_press) && (state_of_M1_BOTTOM_LIMIT_SWITCH == 0))
     {
       takeStep();
@@ -62,13 +97,13 @@ void actionForButton(byte buttonPin)
 // Interrupt service routines
 void emergencyStop()
 {
-  // Red LED On
+  // EMERGENCY_BUTTON has been pressed.
   state_of_EMERGENCY_BUTTON = EMERGENCY_BUTTON;
 }
 
 void enableMotors()
 {
-  // Green LED On
+  // ENABLE_BUTTON has been pressed.
   state_of_ENABLE_BUTTON = ENABLE_BUTTON;
 }
 
@@ -131,6 +166,7 @@ void setupButtons()
   attachPCINT(digitalPinToPCINT(M1_CCW_BUTTON), requestCCWRotation, FALLING);
   attachPCINT(digitalPinToPCINT(M1_TOP_LIMIT_SWITCH), topLimitSwitchTriggered, FALLING);
   attachPCINT(digitalPinToPCINT(M1_BOTTOM_LIMIT_SWITCH), bottomLimitSwitchTriggered, FALLING);
+  // To-do: Add the remaing input buttons ISRs.
 }
 
 void checkButtonState()
