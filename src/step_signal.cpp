@@ -13,6 +13,10 @@ If so, an appropriate delay may have to be implemented with millis() instead.
 
 #include "step_signal.h"
 
+// Pin definitions
+const byte M1_StepSignalPin = 43;
+// const byte M2_StepSignalPin = 42;
+
 // Declare variable
 unsigned long half_step_delay; // Units are milliseconds.
 unsigned int number_of_steps_for_one_rotation; // Calculated value of how many steps it takes to make rotate 360 degrees given the selected speed (RPM) and microstep mode.

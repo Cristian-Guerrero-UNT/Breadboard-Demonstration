@@ -7,10 +7,6 @@ For now, it is up to the user to make sure that the settings set in step_signal.
 
 #include <Arduino.h>
 
-// Pin definitions
-const byte M1_StepSignalPin = 43;
-// const byte M2_StepSignalPin = 42;
-
 // Declare variables
 extern unsigned int number_of_steps_for_one_rotation; // Number of steps that it will take to make 1 revolution.
 

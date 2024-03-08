@@ -49,11 +49,13 @@ void actionForButton(byte buttonPin)
     disableMotor();
     state_of_EMERGENCY_BUTTON = 0;
     break;
+
   case ENABLE_BUTTON:
     // Enable stepper motor
     changeMotorState();
     state_of_ENABLE_BUTTON = 0;
     break;
+
   case M1_CW_BUTTON:
     // Rotate the stepper motor in CW direction
     digitalWrite(M1_DirectionPin, HIGH);
@@ -69,6 +71,7 @@ void actionForButton(byte buttonPin)
       state_of_M1_BOTTOM_LIMIT_SWITCH = 0;
     }
     break;
+
   case M1_CCW_BUTTON:
     // Rotate the stepper motor in CCW direction
     digitalWrite(M1_DirectionPin, LOW);
@@ -84,6 +87,7 @@ void actionForButton(byte buttonPin)
       state_of_M1_TOP_LIMIT_SWITCH = 0;
     }
     break;
+    
   default: // To-do: create a default case that is more relavent for when the system is operating in production environment.
     // If we enter here message Error
     Serial.println("There has been an error within the switch statement.");
