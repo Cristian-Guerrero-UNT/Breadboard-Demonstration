@@ -22,16 +22,17 @@
 #include "src\step_signal.h"
 
 // Pin definitions
-const byte SM_ResetPin = 47;
-const byte SM_SleepPin = 46;
-const byte M1_ChipSelectPin = 49;
-const byte M2_ChipSelectPin = 48;
+const byte SM_ResetPin = 48;
+const byte SM_SleepPin = 49;
+const byte M1_ChipSelectPin = 47;
+const byte M2_ChipSelectPin = 46;
+const byte ACT_ChipSelectPin = 40;
 
 // Variables
 bool motorState = false; // Variable for button press to enable or disable motor
 
 // Initialise an array of drv8711 objects for the drivers
-drv8711 Axis[2] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
+drv8711 Axis[3] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin), drv8711(ACT_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
 
 // Constants for current calc / setting
 const float ISENSE = 0.05;                                    // Value of current sense resistors in ohms
@@ -88,7 +89,7 @@ void setup()
   inputString.reserve(200);
 
   // Write library defaults to Drivers
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 3; i++) {
     Axis[i].init();
 
     // Make specific register settings - too set my current working values
@@ -390,7 +391,7 @@ void resetDefaults()
 void selectAxis(int axis)
 //##########################################################################
 {
-  if (axis >= 0 and axis < 2) {
+  if (axis >= 0 and axis < 3) {
     currentAxis = axis;
   }
 }
