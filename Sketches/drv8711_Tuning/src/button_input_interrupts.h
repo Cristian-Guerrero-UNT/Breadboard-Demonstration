@@ -11,6 +11,8 @@ This has caused issues uploading sketches in the past.
 #include "step_signal.h"
 #include <TimerOne.h>
 
+extern unsigned int number_of_steps_for_one_rotation; // Number of steps that it will take to make 1 revolution.
+
 // Function declarations
 void setupButtons();
 void checkButtonState();

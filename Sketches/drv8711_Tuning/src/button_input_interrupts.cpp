@@ -37,7 +37,9 @@ volatile byte button_state;
 // Initialize Variables
 const uint8_t rotations_per_button_press = 2; // Set how many rotations you want a button press to go here.
 //unsigned long steps_per_button_press = rotations_per_button_press * number_of_steps_for_one_rotation;// The max value this could be is 256 step_mode * 200 full steps per rotation * 60 rotations from one end of the track to the other end = 3,072,000 1/256 steps.
-unsigned long steps_per_button_press = 400;
+unsigned long steps_per_button_press = 40000;
+unsigned long int buttonReadTime = 0;
+const unsigned short buttonReadDelay = 1000;
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 0;    // the debounce time; increase if the output flickers
 
@@ -195,37 +197,36 @@ void checkButtonState()
     }
   }
 
-  unsigned int counter1 = 0; // For CW and CCW rotation.
+  //unsigned int counter1 = 0; // For CW and CCW rotation.
   unsigned int counter2 = 0; // For CW and CCW rotation.
 
   if(!digitalRead(M1_CW_BUTTON))
   {
     digitalWrite(M1_DirectionPin, HIGH);
-    while ((counter1 < steps_per_button_press) && (state_of_M1_TOP_LIMIT_SWITCH == 0))
+    Timer1.pwm(12, 512);
+    while ((millis() > buttonReadTime + buttonReadDelay) && (digitalRead(M1_TOP_LIMIT_SWITCH)))
     {
-      Serial.println("Inside while M1_CW_BUTTON");
-      Timer1.pwm(12, 512);
-      counter1++;
+      //Serial.println("counter1: " + String(counter1));
     }
+    buttonReadTime = millis();
     Timer1.pwm(12,0);
-    if(state_of_M1_TOP_LIMIT_SWITCH != 0)
-    {
-      state_of_M1_TOP_LIMIT_SWITCH = 0;
-    }
+    // if(state_of_M1_TOP_LIMIT_SWITCH != 0)
+    // {
+    //   state_of_M1_TOP_LIMIT_SWITCH = 0;
+    // }
   }
   if(!digitalRead(M1_CCW_BUTTON))
   {
     digitalWrite(M1_DirectionPin, LOW);
     while ((counter2 < steps_per_button_press) && (state_of_M1_BOTTOM_LIMIT_SWITCH == 0))
     {
-      Serial.println("Inside while M1_CCW_BUTTON");
       Timer1.pwm(12, 512);
       counter2++;
     }
     Timer1.pwm(12, 0);
-    if(state_of_M1_BOTTOM_LIMIT_SWITCH != 0)
-    {
-      state_of_M1_BOTTOM_LIMIT_SWITCH = 0;
-    }
+    // if(state_of_M1_BOTTOM_LIMIT_SWITCH != 0)
+    // {
+    //   state_of_M1_BOTTOM_LIMIT_SWITCH = 0;
+    // }
   }
 }
