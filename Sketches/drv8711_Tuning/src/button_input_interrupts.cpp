@@ -38,8 +38,7 @@ volatile byte button_state;
 const uint8_t rotations_per_button_press = 2; // Set how many rotations you want a button press to go here.
 //unsigned long steps_per_button_press = rotations_per_button_press * number_of_steps_for_one_rotation;// The max value this could be is 256 step_mode * 200 full steps per rotation * 60 rotations from one end of the track to the other end = 3,072,000 1/256 steps.
 unsigned long steps_per_button_press = 40000;
-unsigned long int buttonReadTime = 0;
-const unsigned short buttonReadDelay = 1000;
+uint32_t lastsent;
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 0;    // the debounce time; increase if the output flickers
 
@@ -204,11 +203,12 @@ void checkButtonState()
   {
     digitalWrite(M1_DirectionPin, HIGH);
     Timer1.pwm(12, 512);
-    while ((millis() > buttonReadTime + buttonReadDelay) && (digitalRead(M1_TOP_LIMIT_SWITCH)))
+    uint32_t now = millis();
+    while (((now + 1000U) > millis()) && (digitalRead(M1_TOP_LIMIT_SWITCH)))
     {
       //Serial.println("counter1: " + String(counter1));
     }
-    buttonReadTime = millis();
+    lastsent = now;
     Timer1.pwm(12,0);
     // if(state_of_M1_TOP_LIMIT_SWITCH != 0)
     // {
