@@ -14,7 +14,7 @@ This has caused issues uploading sketches in the past.
 // Function declarations
 void setupButtons();
 void checkButtonState();
-void changeMotorState(); // Defined in the drv8711_Tuning.ino sketch.
+void enableMotor(); // Defined in the drv8711_Tuning.ino sketch.
 void disableMotor(); // Defined in the drv8711_Tuning.ino sketch.
 
 #endif

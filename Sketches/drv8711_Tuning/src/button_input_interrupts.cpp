@@ -95,7 +95,7 @@ void checkButtonState()
     if (reading != button_state) {
       button_state = reading;
       if (button_state == LOW){
-        changeMotorState();
+        enableMotor();
       }
     }
   }

@@ -28,15 +28,12 @@ const byte M1_ChipSelectPin = 47;
 const byte M2_ChipSelectPin = 46;
 const byte ACT_ChipSelectPin = 40;
 
-// Variables
-bool motorState = false; // Variable for button press to enable or disable motor
-
 // Initialise an array of drv8711 objects for the drivers
 drv8711 Axis[3] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin), drv8711(ACT_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
 
 // Constants for current calc / setting
 const float ISENSE = 0.05;                                    // Value of current sense resistors in ohms
-const float CurrentLimit = 2.8;                               // Current Limit ( do not set above 4.5 for BOOST-DRV8711 )
+const float CurrentLimit = 4.5;                               // Current Limit ( do not set above 4.5 for BOOST-DRV8711 )
 const float ISGAIN40_max = 2.75 * 255 / (256 * 40 * ISENSE);  // Max Current for each ISGAIN Value.
 const float ISGAIN20_max = 2.75 * 255 / (256 * 20 * ISENSE);
 const float ISGAIN10_max = 2.75 * 255 / (256 * 10 * ISENSE);
@@ -397,11 +394,10 @@ void selectAxis(int axis)
 }
 
 //##########################################################################
-void changeMotorState()
+void enableMotor()
 //##########################################################################
 {
-  motorState = !motorState;
-  setMotor(motorState);
+  Axis[currentAxis].enable();
 }
 
 //##########################################################################
