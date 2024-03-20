@@ -19,13 +19,19 @@ drv8711::drv8711 (int pin)
 	SPI.setBitOrder(MSBFIRST);
  }
 
-void drv8711::init () 
+void drv8711::stepper_motor_init () 
 {
-    set_defaults();
+    set_stepper_motor_defaults();
     WriteAllRegisters();
  }
 
-void drv8711::set_defaults ()
+void drv8711::actuator_init () 
+{
+    set_actuator_defaults();
+    WriteAllRegisters();
+ }
+
+void drv8711::set_stepper_motor_defaults ()
 {
  	// CTRL Register
 	G_CTRL_REG.Address 	= 0x00;
@@ -55,6 +61,65 @@ void drv8711::set_defaults ()
 	// DECAY Register.
 	G_DECAY_REG.Address = 0x04;
 	G_DECAY_REG.DECMOD  = DECMOD_MIXAUTO;	//Decay Mode
+	G_DECAY_REG.TDECAY 	= 15;				//Decay Time 0..255 * 500ns
+
+	// STALL Register
+	G_STALL_REG.Address = 0x05;
+	G_STALL_REG.VDIV 	= VDIV_4;		//Back EMF Div factor
+	G_STALL_REG.SDCNT 	= SDCNT_8;		//Stall Step Count 
+	G_STALL_REG.SDTHR 	= 0 ;			//Stall Detection Threshold 0..255
+
+	// DRIVE Register
+	G_DRIVE_REG.Address = 0x06;
+	G_DRIVE_REG.IDRIVEP = IDRIVEP_50;	//High Side Gate Current mA (Source)
+	G_DRIVE_REG.IDRIVEN = IDRIVEN_100;	//Low Side Gate Current mA (Sink)
+	G_DRIVE_REG.TDRIVEP = TDRIVEP_500;	//High Side Gate Drive Time ns 
+	G_DRIVE_REG.TDRIVEN = TDRIVEN_500;	//Low Side Gate Drive Time ns 
+	G_DRIVE_REG.OCPDEG  = OCPDEG_2;		//OCP Deglitch time uS  
+	G_DRIVE_REG.OCPTH   = OCPTH_500;	//OCP Threshold mV
+
+	// STATUS Register
+	G_STATUS_REG.Address = 0x07;
+	G_STATUS_REG.STDLAT  = OFF;			//Latched Stall Detect
+	G_STATUS_REG.STD     = OFF;  		//Stall Detected 
+	G_STATUS_REG.UVLO    = OFF;  		//UnderVoltage Lockout  
+	G_STATUS_REG.BPDF    = OFF; 	 	//Channel B Predriver Fault 
+	G_STATUS_REG.APDF    = OFF;			//Channel A Predriver Fault 
+	G_STATUS_REG.BOCP    = OFF;			//Channel B OverCurrent 
+	G_STATUS_REG.AOCP    = OFF;			//Channel A OverCurrent 
+	G_STATUS_REG.OTS     = OFF;			//Over Temperature 
+}
+
+void drv8711::set_actuator_defaults ()
+{
+ 	// CTRL Register
+	G_CTRL_REG.Address 	= 0x00;
+	G_CTRL_REG.DTIME 	= DTIME_850; 	//Dead Time in ns
+	G_CTRL_REG.ISGAIN   = ISGAIN_10;	//ISENSE amp gain 
+	G_CTRL_REG.EXSTALL 	= OFF;			//External Stall Detect
+	G_CTRL_REG.MODE     = STEPS_32;		//Microstepping Mode
+	G_CTRL_REG.RSTEP 	= OFF;			//Step 
+	G_CTRL_REG.RDIR 	= OFF;			//Reverse Direction Input
+	G_CTRL_REG.ENBL 	= OFF;			//Enable Motor
+	
+	// TORQUE Register
+	G_TORQUE_REG.Address = 0x01;
+	G_TORQUE_REG.SIMPLTH = SIMPLTH_100;	//Back EMF Sample Threshold uS
+	G_TORQUE_REG.TORQUE  = 128;			//Torque Value 0..255
+        
+	// OFF Register
+	G_OFF_REG.Address 	= 0x02;
+	G_OFF_REG.PWMMODE 	= ON;			//PWM Direct Mode - OFF for Indexed Mode 
+	G_OFF_REG.TOFF 		= 1;			//Off Time 0..255 in 500ns inc.
+
+	// BLANK Register
+	G_BLANK_REG.Address = 0x03;			
+	G_BLANK_REG.ABT 	= OFF;			//Enable Adaptive Blanking Time
+	G_BLANK_REG.TBLANK 	= 125;			//Blanking Time 0..255 in 20ns inc ( 1us min )
+
+	// DECAY Register.
+	G_DECAY_REG.Address = 0x04;
+	G_DECAY_REG.DECMOD  = DECMOD_SLOW;	//Decay Mode
 	G_DECAY_REG.TDECAY 	= 15;				//Decay Time 0..255 * 500ns
 
 	// STALL Register
