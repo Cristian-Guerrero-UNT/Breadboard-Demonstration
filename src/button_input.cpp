@@ -39,7 +39,7 @@ const byte ACT_FaultPin = 18;
 
 // Initialize Variables
 const byte rotations_per_button_press = 2;                             // Set how many rotations you want a button press to go here.
-unsigned long time_for_rotation = rotations_per_button_press * 1000UL; // The units need to be in milliseconds to work properly with the PWM initialization.
+unsigned long time_for_rotation = rotations_per_button_press * 1000UL; // The units need to be in milliseconds to work properly with the PWM initialization of 5ms period.
 unsigned long lastDebounceTime = 0;                                    // the last time the output pin was toggled
 unsigned long debounceDelay = 0;                                       // the debounce time; increase if the output flickers
 
@@ -54,19 +54,19 @@ void setupButtons()
 {
   // Set pins as output.
   pinMode(SM1_DirectionPin, OUTPUT);
-  // pinMode(SM2_DirectionPin, OUTPUT);
+  pinMode(SM2_DirectionPin, OUTPUT);
   // Set button pins as input.
   pinMode(EMERGENCY_BUTTON, INPUT_PULLUP);
-  pinMode(ENABLE_BUTTON, INPUT_PULLUP);
+  pinMode(RESET_ALL_MOTORS_BUTTON, INPUT_PULLUP);
   pinMode(SM1_CW_BUTTON, INPUT_PULLUP);
   pinMode(SM1_CCW_BUTTON, INPUT_PULLUP);
-  // pinMode(M2_CW_BUTTON, INPUT_PULLUP);
-  // pinMode(M2_CCW_BUTTON, INPUT_PULLUP);
+  pinMode(SM2_CW_BUTTON, INPUT_PULLUP);
+  pinMode(SM2_CCW_BUTTON, INPUT_PULLUP);
   // Set limit switches as input.
   pinMode(SM1_TOP_LIMIT_SWITCH, INPUT_PULLUP);
   pinMode(SM1_BOTTOM_LIMIT_SWITCH, INPUT_PULLUP);
-  // pinMode(M2_TOP_LIMIT_SWITCH, INPUT_PULLUP);
-  // pinMode(M2_BOTTOM_LIMIT_SWITCH, INPUT_PULLUP);
+  pinMode(SM2_TOP_LIMIT_SWITCH, INPUT_PULLUP);
+  pinMode(SM2_BOTTOM_LIMIT_SWITCH, INPUT_PULLUP);
 
   // Initialize the Timer One PWM generation.
   Timer1.initialize(5000); // Creates a 200 Hz PWM signal. Each cycle corresponds to a step at the DRV8711.
@@ -86,10 +86,10 @@ void setupButtons()
 
 void actionForButton()
 {
-  // TODO - decide if these variables should be local or global.
+  // TODO - decide if these variables should be local or global at a later date.
   bool lastButtonState = HIGH; // the previous reading from the input pin
   bool buttonState;            // the current reading from the input pin
-  bool reading = digitalRead(ENABLE_BUTTON);
+  bool reading = digitalRead(RESET_ALL_MOTORS_BUTTON);
 
   if (reading != lastButtonState)
   {
@@ -160,21 +160,21 @@ void actionForButton()
   // ACTUATOR Button Input
   // As per 7.3.2 Direct PWM Input Mode
   // Reverse Drive
-  if (!digitalRead(actuatorUP))
+  if (!digitalRead(ACT_UP_BUTTON))
   {
-    digitalWrite(actuatorAIN1, LOW);
-    digitalWrite(actuatorAIN2, HIGH);
+    digitalWrite(ACT_AIN1, LOW);
+    digitalWrite(ACT_AIN2, HIGH);
   }
   // Forward Drive
-  else if (!digitalRead(actuatorDOWN))
+  else if (!digitalRead(ACT_DOWN_BUTTON))
   {
-    digitalWrite(actuatorAIN1, HIGH);
-    digitalWrite(actuatorAIN2, LOW);
+    digitalWrite(ACT_AIN1, HIGH);
+    digitalWrite(ACT_AIN2, LOW);
   }
   // Asynchronous Fast Decay
   else
   {
-    digitalWrite(actuatorAIN1, LOW);
-    digitalWrite(actuatorAIN2, LOW);
+    digitalWrite(ACT_AIN1, LOW);
+    digitalWrite(ACT_AIN2, LOW);
   }
 }
