@@ -159,6 +159,25 @@ void actionForButton()
     Timer1.pwm(SM2_StepPin, 0);
   }
 
-  // TODO - Add Actuator code.
-  // ACTUATOR code here
+  // ACTUATOR Button Input
+  // As per 7.3.2 Direct PWM Input Mode
+  // Reverse Drive
+  if(!digitalRead(actuatorUP))
+  {
+    digitalWrite(actuatorAIN1, LOW);
+    digitalWrite(actuatorAIN2, HIGH);
+  }
+  // Forward Drive
+  else if(!digitalRead(actuatorDOWN))
+  {
+    digitalWrite(actuatorAIN1, HIGH);
+    digitalWrite(actuatorAIN2, LOW);
+    
+  }
+  // Asynchronous Fast Decay
+  else 
+  {
+    digitalWrite(actuatorAIN1, LOW);
+    digitalWrite(actuatorAIN2, LOW);
+  }
 }
