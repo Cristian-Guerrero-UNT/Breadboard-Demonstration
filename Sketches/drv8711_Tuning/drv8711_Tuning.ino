@@ -23,12 +23,12 @@
 // Pin definitions
 const byte ResetPin = 48;
 const byte SleepPin = 49;
-const byte M1_ChipSelectPin = 47;
-const byte M2_ChipSelectPin = 46;
+const byte SM1_ChipSelectPin = 47;
+const byte SM2_ChipSelectPin = 46;
 const byte ACT_ChipSelectPin = 40;
 
 // Initialise an array of drv8711 objects for the drivers
-drv8711 Axis[3] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin), drv8711(ACT_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
+drv8711 Axis[3] = { drv8711(SM1_ChipSelectPin), drv8711(SM2_ChipSelectPin), drv8711(ACT_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
 
 // Constants for current calc / setting
 const float ISENSE = 0.05;                                    // Value of current sense resistors in ohms

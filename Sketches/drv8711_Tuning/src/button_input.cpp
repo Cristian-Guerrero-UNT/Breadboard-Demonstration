@@ -22,15 +22,15 @@ const byte ACT_UP_BUTTON = 66;
 const byte ACT_DOWN_BUTTON = 67;
 // DRV8711 specific Pins
 const byte SM1_DirectionPin = 45;
-const byte SM1_StepPin = 43;
+const byte SM1_StepPin = 11;
 const byte SM2_DirectionPin = 44;
-const byte SM2_StepPin = 42;
+const byte SM2_StepPin = 12;
 const byte ACT_AIN1 = 41;
 const byte ACT_AIN2 = 39;
 // Limit Switches
 const byte SM1_TOP_LIMIT_SWITCH = 10;
-const byte SM1_BOTTOM_LIMIT_SWITCH = 11;
-const byte SM2_TOP_LIMIT_SWITCH = 12;
+const byte SM1_BOTTOM_LIMIT_SWITCH = 43;
+const byte SM2_TOP_LIMIT_SWITCH = 42;
 const byte SM2_BOTTOM_LIMIT_SWITCH = 13;
 // Fault Pins
 const byte SM1_FaultPin = 20;
