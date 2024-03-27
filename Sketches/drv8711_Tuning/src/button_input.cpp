@@ -88,7 +88,7 @@ void actionForButton()
 {
   // TODO - decide if these variables should be local or global at a later date.
   bool lastButtonState = HIGH; // the previous reading from the input pin
-  bool buttonState;            // the current reading from the input pin
+  bool button_state;            // the current reading from the input pin
   bool reading = digitalRead(RESET_ALL_MOTORS_BUTTON);
 
   if (reading != lastButtonState)

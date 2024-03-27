@@ -18,7 +18,7 @@
 
 #include <drv8711.h>
 #include <SPI.h>
-#include "src\button_input_interrupts.h"
+#include "src\button_input.h"
 
 // Pin definitions
 const byte ResetPin = 48;
@@ -377,7 +377,10 @@ void setABT(int stat)
 void resetDefaults()
 //##########################################################################
 {
-  Axis[currentAxis].init();
+  Axis[0].stepper_motor_init();
+  Axis[1].stepper_motor_init();
+  Axis[2].actuator_init();
+
 }
 
 //##########################################################################

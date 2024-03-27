@@ -107,13 +107,15 @@ class drv8711
   bool SavedStart; 
   bool ErrorFlag;
   
-  void init(); 
+  void stepper_motor_init(); 
+  void actuator_init();
   void enable ();  
   void disable ();
   void get_status ();
   void clear_status ();
   void clear_error ();
-  void set_defaults ();
+  void set_stepper_motor_defaults ();
+  void set_actuator_defaults();
   
   void ReadAllRegisters () ;
   void ReadCTRLRegister();
