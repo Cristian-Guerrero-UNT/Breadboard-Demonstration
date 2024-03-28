@@ -18,18 +18,17 @@
 
 #include <drv8711.h>
 #include <SPI.h>
-#include "src\button_input_interrupts.h"
-#include "src\step_signal.h"
+#include "src\button_input.h"
 
 // Pin definitions
-const byte SM_ResetPin = 48;
-const byte SM_SleepPin = 49;
-const byte M1_ChipSelectPin = 47;
-const byte M2_ChipSelectPin = 46;
+const byte ResetPin = 48;
+const byte SleepPin = 49;
+const byte SM1_ChipSelectPin = 47;
+const byte SM2_ChipSelectPin = 46;
 const byte ACT_ChipSelectPin = 40;
 
 // Initialise an array of drv8711 objects for the drivers
-drv8711 Axis[3] = { drv8711(M1_ChipSelectPin), drv8711(M2_ChipSelectPin), drv8711(ACT_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
+drv8711 Axis[3] = { drv8711(SM1_ChipSelectPin), drv8711(SM2_ChipSelectPin), drv8711(ACT_ChipSelectPin) };  //Parameter is Serial Chip Select (SCS) pin for Driver
 
 // Constants for current calc / setting
 const float ISENSE = 0.05;                                    // Value of current sense resistors in ohms
@@ -64,18 +63,18 @@ void setup()
   // Setup the buttons
   setupButtons();
   // Setup the frequency at which each step will be taken.
-  setupStepSignalFrequency();
+  
 
   // Wake Modules
-  pinMode(SM_SleepPin, OUTPUT);
-  digitalWrite(SM_SleepPin, HIGH);
+  pinMode(SleepPin, OUTPUT);
+  digitalWrite(SleepPin, HIGH);
   delay(1);
 
   // Reset the driver before initialisation
-  pinMode(SM_ResetPin, OUTPUT);
-  digitalWrite(SM_ResetPin, HIGH);
+  pinMode(ResetPin, OUTPUT);
+  digitalWrite(ResetPin, HIGH);
   delay(10);
-  digitalWrite(SM_ResetPin, LOW);
+  digitalWrite(ResetPin, LOW);
   delay(1);
 
   digitalWrite(50, HIGH); // CIPO is initially set HIGH during setup. Default pin is D50 on the Mega 2560.
@@ -86,26 +85,23 @@ void setup()
   inputString.reserve(200);
 
   // Write library defaults to Drivers
-  for (int i = 0; i < 3; i++) {
-    Axis[i].init();
+  // Setup Stepper Motor 1
+  Axis[0].stepper_motor_init();
+  Axis[0].disable();
+  Axis[0].WriteAllRegisters();
+  Axis[0].ReadAllRegisters();
+  // Setup Stepper Motor 2
+  Axis[1].stepper_motor_init();
+  Axis[1].disable();
+  Axis[1].WriteAllRegisters();
+  Axis[1].ReadAllRegisters();
+  // Setup Actuator
+  Axis[2].actuator_init();
+  Axis[2].disable();
+  Axis[2].WriteAllRegisters();
+  Axis[2].ReadAllRegisters();
 
-    // Make specific register settings - too set my current working values
-    Axis[i].G_TORQUE_REG.TORQUE = 186;            // Set current to 2 amps
-    Axis[i].G_CTRL_REG.MODE = STEPS_32;           // Microstepping mode to 1/32
-    Axis[i].G_DECAY_REG.DECMOD = DECMOD_MIXAUTO;  // Decay Mode to Mixed Auto
-    Axis[i].G_BLANK_REG.TBLANK = 129;             // TBLANK to 2.6 uS
-    Axis[i].G_BLANK_REG.ABT = ON;                 // ABT ON
-    Axis[i].G_DECAY_REG.TDECAY = 7;               // TDECAY to 4 uS
-    Axis[i].G_OFF_REG.TOFF = 31;                  // TOFF to 16 uS
 
-    Axis[i].disable();  // disable Motors
-
-    // Write the changes to Driver
-    Axis[i].WriteAllRegisters();
-
-    // Read back the Registers
-    Axis[i].ReadAllRegisters();
-  }
   // Print a summary of key settings
   displaySettings();
 }
@@ -115,7 +111,7 @@ void loop()
 //##########################################################################
 {
   //
-  checkButtonState();
+  actionForButton();
 
   // Periodically check status register, and print any flagged errors
   if (millis() > LastRead + readDelay) {
@@ -381,7 +377,10 @@ void setABT(int stat)
 void resetDefaults()
 //##########################################################################
 {
-  Axis[currentAxis].init();
+  Axis[0].stepper_motor_init();
+  Axis[1].stepper_motor_init();
+  Axis[2].actuator_init();
+
 }
 
 //##########################################################################
